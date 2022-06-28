@@ -1,7 +1,7 @@
 require('dotenv').config();
-const router = require('express').Router(), db = require('../models'), { verifyLength } = require('../middleware/verify-data.middleware');
+const router = require('express').Router(), db = require('../models'), { verifyData, verifyUpdateReq } = require('../middleware/verify-data.middleware');
 
-router.post('/create', verifyLength, async (req, res) => {
+router.post('/create', verifyData, async (req, res) => {
     try {
         res.status(201).send({ success: true, data: await db.Post.create(req.body), message: "Date inserted successfully", status: 201 });
     } catch (error) {
@@ -19,7 +19,7 @@ router.get('/get', async (req, res) => {
     }
 });
 
-router.put('/update/:id', async (req, res) => {
+router.put('/update/:id', verifyUpdateReq, verifyData, async (req, res) => {
     try {
         await db.Post.update(req.body, { where: { id: req.params.id } });
         res.status(200).send({ success: true, data: await db.Post.findAll(), message: 'Data fetched successfully', status: 200 });
